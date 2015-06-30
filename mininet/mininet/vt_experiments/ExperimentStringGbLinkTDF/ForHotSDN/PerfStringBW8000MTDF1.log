@@ -1,0 +1,81 @@
+********* Running stringBandwidthTest *********
+RTT Avg = 1.796 ms
+iperf 3-CURRENT
+Linux yjq-XPS-8700 3.16.3 #38 SMP Thu Mar 5 17:02:21 CST 2015 x86_64
+Time: Sat, 07 Mar 2015 03:48:45 GMT
+Connecting to host 10.0.0.2, port 5201
+      Cookie: yjq-XPS-8700.1425700125.831369.0e11f
+      TCP MSS: 1448 (default)
+[  4] local 10.0.0.1 port 36112 connected to 10.0.0.2 port 5201
+Starting Test: protocol: TCP, 1 streams, 131072 byte blocks, omitting 0 seconds, 20 second test
+[ ID] Interval           Transfer     Bandwidth       Retr  Cwnd
+[  4]   0.00-1.00   sec  32.6 MBytes   274 Mbits/sec    2   70.7 KBytes       
+[  4]   1.00-2.00   sec  37.5 MBytes   314 Mbits/sec    0   82.0 KBytes       
+[  4]   2.00-3.00   sec  42.2 MBytes   354 Mbits/sec    0   90.5 KBytes       
+[  4]   3.00-4.00   sec  53.2 MBytes   447 Mbits/sec    0    103 KBytes       
+[  4]   4.00-5.00   sec  71.2 MBytes   597 Mbits/sec    0    127 KBytes       
+[  4]   5.00-6.00   sec  89.2 MBytes   748 Mbits/sec    0    180 KBytes       
+[  4]   6.00-7.00   sec   129 MBytes  1085 Mbits/sec    0    250 KBytes       
+[  4]   7.00-8.00   sec   195 MBytes  1638 Mbits/sec    0    346 KBytes       
+[  4]   8.00-9.00   sec   268 MBytes  2251 Mbits/sec    0    468 KBytes       
+[  4]   9.00-10.00  sec   362 MBytes  3038 Mbits/sec    0    619 KBytes       
+[  4]  10.00-11.00  sec   444 MBytes  3722 Mbits/sec    0    806 KBytes       
+[  4]  11.00-12.00  sec   520 MBytes  4360 Mbits/sec    0   1.01 MBytes       
+[  4]  12.00-13.00  sec   622 MBytes  5225 Mbits/sec    0   1.27 MBytes       
+[  4]  13.00-14.00  sec   720 MBytes  6040 Mbits/sec    0   1.56 MBytes       
+[  4]  14.00-15.00  sec   810 MBytes  6795 Mbits/sec    0   1.91 MBytes       
+[  4]  15.00-16.00  sec   868 MBytes  7277 Mbits/sec    0   2.31 MBytes       
+[  4]  16.00-17.00  sec   872 MBytes  7319 Mbits/sec    0   2.76 MBytes       
+[  4]  17.00-18.00  sec   866 MBytes  7267 Mbits/sec    0   3.27 MBytes       
+[  4]  18.00-19.00  sec   862 MBytes  7235 Mbits/sec    0   3.48 MBytes       
+[  4]  19.00-20.00  sec   865 MBytes  7256 Mbits/sec    0   3.49 MBytes       
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Test Complete. Summary Results:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  4]   0.00-20.00  sec  8.53 GBytes  3662 Mbits/sec    2             sender
+[  4]   0.00-20.00  sec  6.45 GBytes  2771 Mbits/sec                  receiver
+CPU Utilization: local/sender 6.2% (0.1%u/6.1%s), remote/receiver 25.4% (0.1%u/25.4%s)
+
+iperf Done.
+
+iperf 3-CURRENT
+Linux yjq-XPS-8700 3.16.3 #38 SMP Thu Mar 5 17:02:21 CST 2015 x86_64
+-----------------------------------------------------------
+Server listening on 5201
+-----------------------------------------------------------
+Time: Sat, 07 Mar 2015 03:48:45 GMT
+Accepted connection from 10.0.0.1, port 36111
+      Cookie: yjq-XPS-8700.1425700125.831369.0e11f
+      TCP MSS: 1448 (default)
+[  5] local 10.0.0.2 port 5201 connected to 10.0.0.1 port 36112
+Starting Test: protocol: TCP, 1 streams, 131072 byte blocks, omitting 0 seconds, 20 second test
+[ ID] Interval           Transfer     Bandwidth
+[  5]   0.00-1.00   sec  32.2 MBytes   270 Mbits/sec                  
+[  5]   1.00-2.00   sec  37.4 MBytes   314 Mbits/sec                  
+[  5]   2.00-3.00   sec  42.3 MBytes   355 Mbits/sec                  
+[  5]   3.00-4.00   sec  53.1 MBytes   445 Mbits/sec                  
+[  5]   4.00-5.00   sec  71.0 MBytes   596 Mbits/sec                  
+[  5]   5.00-6.00   sec  89.1 MBytes   748 Mbits/sec                  
+[  5]   6.00-7.00   sec   129 MBytes  1081 Mbits/sec                  
+[  5]   7.00-8.00   sec   195 MBytes  1633 Mbits/sec                  
+[  5]   8.00-9.00   sec   268 MBytes  2250 Mbits/sec                  
+[  5]   9.00-10.00  sec   361 MBytes  3027 Mbits/sec                  
+[  5]  10.00-11.00  sec   444 MBytes  3721 Mbits/sec                  
+[  5]  11.00-12.00  sec   519 MBytes  4353 Mbits/sec                  
+[  5]  12.00-13.00  sec   559 MBytes  4683 Mbits/sec                  
+[  5]  13.00-14.00  sec   475 MBytes  3984 Mbits/sec                  
+[  5]  14.00-15.00  sec   447 MBytes  3752 Mbits/sec                  
+[  5]  15.00-16.00  sec   553 MBytes  4635 Mbits/sec                  
+[  5]  16.00-17.00  sec   586 MBytes  4920 Mbits/sec                  
+[  5]  17.00-18.00  sec   573 MBytes  4804 Mbits/sec                  
+[  5]  18.00-19.00  sec   594 MBytes  4985 Mbits/sec                  
+[  5]  19.00-20.00  sec   569 MBytes  4773 Mbits/sec                  
+[  5]  20.00-20.01  sec  11.5 MBytes  9067 Mbits/sec                  
+- - - - - - - - - - - - - - - - - - - - - - - - -
+Test Complete. Summary Results:
+[ ID] Interval           Transfer     Bandwidth       Retr
+[  5]   0.00-20.01  sec  8.53 GBytes  3660 Mbits/sec    2             sender
+[  5]   0.00-20.01  sec  6.45 GBytes  2770 Mbits/sec                  receiver
+CPU Utilization: local/receiver 25.4% (0.1%u/25.4%s), remote/sender 6.2% (0.1%u/6.1%s)
+iperf3: interrupt - the server has terminated
+

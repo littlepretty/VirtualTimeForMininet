@@ -44,3 +44,6 @@ Tips: you may need to repeat clean-install twice.
 
 ## Acknowledge
 My implementation of virtual time is actually inspired by that of Jeremy Lamps. Great thanks for sharing his source code and providing a very detailed documentation.
+
+## Experiments with Virtual Time
+coming soon...
