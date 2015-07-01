@@ -33,10 +33,10 @@ from mininet.clean import cleanup
 
 flush = sys.stdout.flush
 
-class StringTestTopo( Topo ):
+class StringTestTopo(Topo):
     "Topology for a string of N switches and 2 hosts."
 
-    def __init__( self, N, **params ):
+    def __init__(self, N, **params):
 
         # Initialize topology
         Topo.__init__( self, **params )
@@ -57,17 +57,13 @@ class StringTestTopo( Topo ):
             last = switch
 
 
-def stringBandwidthTest( lengths ):
+def stringBandwidthTest(host_class, controller_class, link_class, length):
 
     "Check bandwidth at various lengths along a switch chain."
 
-    switchCount = lengths
+    topo_class = StringTestTopo(length)
 
-    topo = StringTestTopo( switchCount )
-
-    net = Mininet( topo = topo, host = host, switch = OVSKernelSwitch,
-                  controller = controller, waitConnected = True,
-                  link = link )
+    net = Mininet(topo=topo_class, host=host_class, switch=OVSKernelSwitch, controller=controller_class, waitConnected=True, link=link_class)
     # no tdf_adaptor to change TDF
     net.start()
 
@@ -106,7 +102,7 @@ def stringBandwidthTest( lengths ):
             cliDataStr, unit = cliout.split(" ")
             cliData = float(cliDataStr)
             client_history.append(cliData)
-            data_file.write( "%s\t%f\t%f\t%s\t%s\n" % ( switchCount, src.tdf, net.cpu_usage, serData, cliData ) )
+            data_file.write( "%s\t%f\t%f\t%s\t%s\n" % ( length, src.tdf, net.cpu_usage, serData, cliData ) )
 
     client_mean = numpy.mean(client_history)
     client_stdev = numpy.std(client_history)
@@ -119,7 +115,7 @@ def stringBandwidthTest( lengths ):
     net.stop()
     return client_mean, client_stdev
 
-def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size = 40):
+def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size=40):
     lg.setLogLevel( 'info' )
 
     """in fact, Controller and Remotecontroller have no difference
@@ -128,10 +124,10 @@ def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", siz
         controller = partial( RemoteController, ip = '127.0.0.1', port=6633 )
     else:
         controller = DefaultController
-    link = partial( TCLink, bw = set_bw, delay = set_delay )
+    link = partial( TCLink, bw=set_bw, delay=set_delay )
 
     """config host's cpu share and time dilation factor"""
-    host = custom( CPULimitedHost, sched = 'cfs', period_us = 100000, cpu = set_cpu, tdf = tdf )
+    host = custom(CPULimitedHost, sched='cfs', period_us=100000, cpu=set_cpu, tdf=tdf)
 
     """with w option, it automatically overwrite everytime"""
     data_file = open('%s.log' % file_name, 'w')
@@ -140,14 +136,13 @@ def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", siz
     data_file.flush()
 
     # seems mininet cannot handle more than 640 switches
-    print "********* Running with %d switches, TDF = %d *********" % (size, tdf)
-    client_avg, client_stdev = stringBandwidthTest(size)
+    print "******* Running with %d switches, TDF = %d *******" % (size, tdf)
+    client_avg, client_stdev = stringBandwidthTest(host, controller, link, size)
     cleanup()
     return client_avg, client_stdev
 
 
-
-def drawData(output):
+def drawData( output ):
     base_category = (1, 2, 3)
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = 'Link Bandwidth (Gbps)'
