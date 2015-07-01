@@ -196,8 +196,9 @@ def main():
         for bw in BWs:
             file_name = "PerfStringBW%dMTDF%d" %(bw, tdf)
             avg, std = runTest(file_name, "NO", tdf, size, 0.5, bw)
-            avg_rates.append(avg)
-            std_rates.append(std)
+            # convert to Gbps
+            avg_rates.append(avg / 1024)
+            std_rates.append(std / 1024)
         AvgRates.append(avg_rates)
         StdRates.append(std_rates)
 
