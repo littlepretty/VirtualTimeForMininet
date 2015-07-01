@@ -16,7 +16,6 @@ Varying link bw, with & without virtual time, test throughput between h1 and h2
 
 import sys
 import numpy
-import time
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as pyplot
@@ -28,7 +27,6 @@ from mininet.log import lg
 from mininet.util import irange, custom
 from mininet.node import CPULimitedHost
 from mininet.link import TCLink
-from mininet.cli import CLI
 from functools import partial
 from mininet.clean import cleanup
 
@@ -68,7 +66,6 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
     # no tdf_adaptor to change TDF
     net.start()
 
-    
     print "*** testing basic connectivity\n"
     src, dst = net.hosts
     if tdf == 1:
@@ -143,7 +140,7 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="10us")
 
 
 def drawData(output, AvgRates, StdRates, BWsInGb):
-    base_category = (1, 2, 3)
+    base_category = tuple(range(1, len(BWsInGb) + 1 ))
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = 'Link Bandwidth (Gbps)'
     yLabel = 'Average TCP Throughput (Gbps)'
@@ -156,7 +153,7 @@ def drawData(output, AvgRates, StdRates, BWsInGb):
 
     rects = []
     fig, ax = pyplot.subplots()
-    for index in [0, 1, 2]:
+    for index in range(0, len(AvgRates)):
         category = [x + index * width for x in base_category]
         rect = ax.bar(category, AvgRates[index], width, color=color_list[index], yerr=StdRates[index], hatch=hatch_list[index])
         rects.append(rect)
@@ -189,7 +186,7 @@ def main():
     StdRates = []
     TDFs = [1, 4]
     BWs = [1000, 2000, 4000]
-    size = 16
+    size = 12
     for tdf in TDFs:
         avg_rates = []
         std_rates = []
@@ -205,7 +202,7 @@ def main():
     # trust me, I got them from physical testbed
     testbed_avg_rates = [3.78, 7.42, 9.22]
     testbed_std_rates = [0.06, 0.147, 0.239]
-    AvgRates.append(avg_rates)
+    AvgRates.append(testbed_avg_rates)
     StdRates.append(testbed_std_rates)
 
     BWsInGb = [ str(x/1000) for x in BWs]
@@ -213,13 +210,4 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
 

@@ -23,7 +23,6 @@ of switches, this example demonstrates:
 """
 import sys
 import numpy
-import time
 import timeit
 import matplotlib
 matplotlib.use('Agg')
@@ -65,11 +64,8 @@ class StringTestTopo( Topo ):
             last = switch
 
 
-def stringBandwidthTest(length, host_class, controller_class, link_class, size, tdf, data_file):
-
+def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, data_file):
     "Check bandwidth at various lengths along a switch chain."
-
-    switchCount = size
 
     topo_class = StringTestTopo(size)
 
@@ -79,7 +75,7 @@ def stringBandwidthTest(length, host_class, controller_class, link_class, size, 
     src, dst = net.hosts[ 0 ], net.hosts[ 1 ]
     print "*** testing basic connectivity"
     net.ping( [ src, dst ] )
-    
+
     if tdf == 1:
         num_pings = 3
         for i in irange(1, num_pings):
@@ -91,7 +87,7 @@ def stringBandwidthTest(length, host_class, controller_class, link_class, size, 
     print "*** testing bandwidth"
     print "testing", src, "<->", dst
 
-    num_rounds = 3
+    num_rounds = 1
     #cli_results = []
     ser_results = []
     omit = 1
@@ -129,7 +125,8 @@ def stringBandwidthTest(length, host_class, controller_class, link_class, size, 
 
     avgSerBw = numpy.mean(ser_results)
     stdevSerBw = numpy.std(ser_results)
-
+    print "Avg = %f" % avgSerBw
+    print "Std = %f" % stdevSerBw
     #data_file.write("%s\t%s\t%s\t%s\t%s\n" % (size, avgCliBw, stdevCliBw, maxCliBw, minCliBw))
     data_file.write("%s\t%s\t%s\t%s\n" % (size, avgSerBw, stdevSerBw, elapsed))
     data_file.flush()
@@ -142,19 +139,19 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="50us")
     """in fact, Controller and Remotecontroller have no difference
     all we need to do is start or not start POX in another shell"""
     if controller == "POX":
-        controller = partial( RemoteController, ip = '127.0.0.1', port = 6633 )
+        controller = partial(RemoteController, ip='127.0.0.1', port=6633)
     else:
         controller = DefaultController
-    link = partial( TCLink, bw = set_bw, delay = set_delay )
+    link = partial(TCLink, bw=set_bw, delay=set_delay)
 
     """config host's cpu share and time dilation factor"""
-    host = custom( CPULimitedHost, sched = 'cfs', period_us = 100000, cpu = 0.5, tdf = TDF )
+    host = custom(CPULimitedHost, sched='cfs', period_us=100000, cpu=set_cpu, tdf=tdf)
 
     """with w option, it automatically overwrite everytime"""
     data_file = open('%s.log' % file_name, 'w')
     print "Results are written to %s.log file" % file_name
 
-    data_file.write("********* Server String Topowith TDF = %d *********\n" % TDF)
+    data_file.write("********* Server String Topowith TDF = %d *********\n" % tdf)
 
     if tdf == 1:
         data_file.write("RTT\tSwitchCount\tAvg\tStd\tTime\n")
@@ -163,13 +160,13 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="50us")
     data_file.flush()
 
     print "********* Running stringBandwidthTest *********", size
-    avg, std = stringBandwidthTest(size)
+    avg, std = stringBandwidthTest(host, controller, link, size, tdf, data_file)
 
     cleanup()
     return avg, std
 
 def drawData(output, AvgRates, StdRates, SwSizes):
-    base_category = (1, 2, 3, 4, 5)
+    base_category = tuple(range(1,len(SwSizes) + 1 ))
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = '#Switches'
     yLabel = 'Average TCP Throughput (Gbps)'
@@ -182,8 +179,9 @@ def drawData(output, AvgRates, StdRates, SwSizes):
 
     rects = []
     fig, ax = pyplot.subplots()
-    for index in [0, 1, 2, 3, 4]:
+    for index in range(0, len(AvgRates) ):
         category = [x + index * width for x in base_category]
+        print category
         rect = ax.bar(category, AvgRates[index], width, color=color_list[index], yerr=StdRates[index], hatch=hatch_list[index])
         rects.append(rect)
 
@@ -191,7 +189,7 @@ def drawData(output, AvgRates, StdRates, SwSizes):
     ax.set_xticks([x + width*3/2 for x in base_category ])
     # ax.set_xticklabels(('4', '8', '10'))
     ax.set_xticklabels(SwSizes)
-    ax.set_yticks(range(maxY+1))
+    ax.set_yticks(range( maxY + 1 ))
 
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(fontSize)
@@ -207,14 +205,13 @@ def drawData(output, AvgRates, StdRates, SwSizes):
     # pyplot.xticks([x for x in range(1, 4, 1)])
     # pyplot.show()
     pyplot.savefig(output, format='eps')
-    print "finished plotting"
-
+    print "finished plotting, see %s" % output
 
 def main():
     AvgRates = []
     StdRates = []
     TDFs = [1, 4]
-    Sizes = [10, 20, 40, 60, 80]
+    Sizes = [5, 10, 20, 40]
     BW = 2000
     for tdf in TDFs:
         avg_rates = []
@@ -229,8 +226,9 @@ def main():
         StdRates.append(std_rates)
 
     Sizes2Str = [str(x) for x in Sizes]
+    print AvgRates
+    print StdRates
     drawData('ScaleBw%dDiffSz' % BW, AvgRates, StdRates, tuple(Sizes2Str))
-
 
 if __name__ == '__main__':
     main()
