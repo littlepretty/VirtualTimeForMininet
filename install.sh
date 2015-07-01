@@ -1,18 +1,13 @@
 #!/bin/bash
 
 # install dependencies
-install_dep()
-{
+install_dep() {
     sudo apt-get update
-    sudo apt-get install autoconf automake libtool make gcc git \
-    socat psmisc xterm ssh iperf iproute telnet \
-    python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 \
-    git-core autotools-dev pkg-config libc6-dev \
+    sudo apt-get install autoconf automake libtool make gcc git socat psmisc xterm ssh iperf iproute telnet python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 git-core autotools-dev pkg-config libc6-dev
 }
 
 # install Open vSwitch
-install_ovs()
-{
+install_ovs() {
     sudo apt-get install openvswitch-datapath-dkms
     sudo apt-get install openvswitch-switch
     sudo apt-get install openvswitch-controller
@@ -22,29 +17,28 @@ install_ovs()
     fi
 }
 # install OpenFlow
-install_of()
-{
+install_of() {
     # git clone git://openflowswitch.org/openflow.git openflow
     cd $HOME/openflow
     sudo ./boot.sh
     sudo ./configure
-    patch -p1 < ../vt_mininet/mininet/util/openflow-patches/controller.patch
+    patch -p1 < $HOME/vt-mininet/mininet/util/openflow-patches/controller.patch
     sudo make
     sudo make install
 }
 # patch kernel
-patch_kernel()
-{
+
+download_kernel() {
     cd $HOME
     # clone Linux kernel's code
     wget https://www.kernel.org/pub/linux/kernel/v3.x/linux-3.16.3.tar.gz
     tar -zxvf linux-3.16.3.tar.gz
     rm linux-3.16.3.tar.gz
+}
 
-    cd /HOME/vt_mininet
-    git checkout low_level_time
-    cd kernel_changes
-    ./transfer.sh ../linux-3.16.3
+patch_kernel() {
+    cd $HOME/vt-mininet/kernel_changes
+    ./transfer.sh $HOME/linux-3.16.3
 
     # build kernel
     cd $HOME/linux-3.16.3
@@ -54,13 +48,13 @@ patch_kernel()
 }
 
 # install VT-Mininet
-install_vt_mininet()
-{
+install_vt_mininet() {
     # clone VTMininet's code
     # git clone https://littlepretty@bitbucket.org/littlepretty/virtualtimeyjq.git vt_mininet
     install_dep
     install_of
     install_ovs
+    download_kernel
     patch_kernel
 
     cd $HOME/vt_mininet/mininet
@@ -68,10 +62,12 @@ install_vt_mininet()
     sudo make install
 }
 
-while getopts "akfsd" option; do
+while getopts "akpfsd" option
+do
     case $option in
     a) install_vt_mininet;;
-    k) patch_kernel;;
+    k) download_kernel;;
+    p) patch_kernel;;
     f) install_of;;
     s) install_ovs;;
     d) install_dep;;

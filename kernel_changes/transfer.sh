@@ -16,7 +16,7 @@ fi
 # generate patch file
 PATCH=VirtualTime.patch
 echo "Step 0. patch file written to ${PATCH}"
-diff -rup ../../OriginLinux-3.16.3/linux-3.16.3/ ./ > ${PATCH}
+diff -rup ../../linux-3.16.3/ ./ > ${PATCH}
 echo ""
 
 

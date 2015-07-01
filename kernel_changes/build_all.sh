@@ -20,33 +20,33 @@ check_err() {
 
 make_kernel() {
 	echo "step 1. make src code for kernel and module"
-	sudo make -j8 > $LOG 2>$ERR
+	sudo make 2>$ERR
 	check_err make_kernel
 }
 
 
 make_modules() {
 	echo "step 1.2. make modules"
-	sudo make modules >> $LOG 2>$ERR
+	sudo make modules 2>$ERR
 	check_err make_modules
 }
 
 install_modules() {
 	echo "step 2. install modules"
-	sudo make modules_install >> $LOG 2>$ERR
+	sudo make modules_install 2>$ERR
 	check_err install_modules
 }
 
 install_kernel() {
 	echo "step 3. install kernel"
-	sudo make install >> $LOG 2>$ERR
+	sudo make install 2>$ERR
 	check_err install
 	echo "make/install complete for kernel 3.16.3"
 }
 
 update_grub() {
 	echo "step 4. update GRUB"
-	update-grub >> $LOG 2>$ERR
+	update-grub 2>$ERR
 	check_err update_grub
 	echo "please reboot OS and press ESC on GRUB interface"
 }
