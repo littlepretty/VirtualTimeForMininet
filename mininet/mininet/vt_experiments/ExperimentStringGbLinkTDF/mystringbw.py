@@ -18,8 +18,8 @@ import sys
 import numpy
 import time
 import matplotlib
-import matplotlib.pyplot as pyplot
 matplotlib.use('Agg')
+import matplotlib.pyplot as pyplot
 
 from mininet.net import Mininet
 from mininet.node import *
@@ -142,7 +142,7 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="10us")
     return client_avg, client_stdev
 
 
-def drawData( output ):
+def drawData(output, AvgRates, StdRates):
     base_category = (1, 2, 3)
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = 'Link Bandwidth (Gbps)'
@@ -158,7 +158,7 @@ def drawData( output ):
     fig, ax = pyplot.subplots()
     for index in [0, 1, 2]:
         category = [x + index * width for x in base_category]
-        rect = ax.bar(category, AvgRate[index], width, color=color_list[index], yerr=StdRate[index], hatch=hatch_list[index])
+        rect = ax.bar(category, AvgRates[index], width, color=color_list[index], yerr=StdRates[index], hatch=hatch_list[index])
         rects.append(rect)
 
     ax.legend(tuple(rects), dataLables, shadow=True, fancybox=True, fontsize=fontSize, loc='upper left')
@@ -173,7 +173,7 @@ def drawData( output ):
         tick.label.set_fontsize(fontSize)
 
     pyplot.grid()
-    pyplot.ylim(( 0, 10 ))
+    pyplot.ylim((0, 10))
     pyplot.xlim(0.65, len(base_category) + 1)
     pyplot.xlabel(xLabel, fontsize=fontSize)
     pyplot.ylabel(yLabel, fontsize=fontSize)
@@ -207,7 +207,7 @@ def main():
     AvgRates.append(avg_rates)
     StdRates.append(testbed_std_rates)
 
-    drawData('Perf%dSwDiffBw' % size)
+    drawData('Perf%dSwDiffBw' % size, AvgRates, StdRates)
 
 if __name__ == '__main__':
     main()
