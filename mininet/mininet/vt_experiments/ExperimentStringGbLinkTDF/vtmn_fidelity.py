@@ -82,7 +82,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
         net.ping( [src, dst] )
 
     print "*** testing bandwidth\n"
-    num_rounds = 3
+    num_rounds = 5
     client_history = []
     time = 16
     omit = 1
@@ -139,7 +139,8 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="10us")
     return client_avg, client_stdev
 
 
-def drawData(output, AvgRates, StdRates, BWsInGb):
+def drawData(output, AvgRates, StdRates, BWs):
+    BWsInGb = [ str(x/1000) for x in BWs]
     base_category = tuple(range(1, len(BWsInGb) + 1 ))
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = 'Link Bandwidth (Gbps)'
@@ -147,9 +148,9 @@ def drawData(output, AvgRates, StdRates, BWsInGb):
 
     color_list = ['c', 'r', 'm', 'y', 'g', 'b', 'k', 'w']
     hatch_list = ['/', '\\', '+', 'x', 'o', '.', '*', '-']
-    width = 0.2
-    fontSize = 21
-    maxY = 10
+    width = 0.25
+    fontSize = 14
+    maxY = max(BWs) / 1000
 
     rects = []
     fig, ax = pyplot.subplots()
@@ -185,7 +186,7 @@ def main():
     AvgRates = []
     StdRates = []
     TDFs = [1, 4]
-    BWs = [1000, 2000, 4000]
+    BWs = [2000, 3000, 4000, 5000]
     size = 12
     for tdf in TDFs:
         avg_rates = []
@@ -202,11 +203,15 @@ def main():
     # trust me, I got them from physical testbed
     testbed_avg_rates = [3.78, 7.42, 9.22]
     testbed_std_rates = [0.06, 0.147, 0.239]
-    AvgRates.append(testbed_avg_rates)
-    StdRates.append(testbed_std_rates)
+    ideal_avg_rates = [x / 1000 for x in BWs]
+    ideal_std_rates = [x - x for x in BWs]
+    AvgRates.append(ideal_avg_rates)
+    StdRates.append(ideal_std_rates)
 
-    BWsInGb = [ str(x/1000) for x in BWs]
-    drawData('Perf%dSwDiffBw' % size, AvgRates, StdRates, tuple(BWsInGb))
+    print AvgRates
+    print StdRates
+
+    drawData('Perf%dSwDiffBw.eps' % size, AvgRates, StdRates, BWs)
 
 if __name__ == '__main__':
     main()
