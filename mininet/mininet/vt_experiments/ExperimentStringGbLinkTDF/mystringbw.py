@@ -1,19 +1,25 @@
 #!/usr/bin/python
 
 """
-Test bandwidth (using iperf) on string/chain networks of fixed size 40,
-using both kernel and user datapaths.
+Benchmarking experiment for fidelity
 
-We construct a network of 2 hosts and N switches, connected as follows:
+Test bandwidth (using iperf) on string/chain networks of fixed size 40,
+using kernel datapaths.
+
+First construct a network of 2 hosts and N switches, connected as follows:
 
        h1 - s1 - s2 - ... - sN - h2
 
 
-WARNING: by default, the reference controller only supports 16
-switches, so this test WILL NOT WORK unless you have recompiled
-your controller to support 100 switches (or more.)
-
+Varying link bw, with & without virtual time, test throughput between h1 and h2
 """
+
+import sys
+import numpy
+import time
+import matplotlib
+import matplotlib.pyplot as pyplot
+
 from mininet.net import Mininet
 from mininet.node import *
 from mininet.topo import Topo
@@ -24,9 +30,6 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 from functools import partial
 from mininet.clean import cleanup
-import sys
-import numpy
-import time
 
 flush = sys.stdout.flush
 
@@ -85,7 +88,7 @@ def stringBandwidthTest( lengths ):
 
     print "*** testing bandwidth\n"
 
-    num_rounds = 10
+    num_rounds = 3
     client_history = []
     time = 25
     omit = 5
@@ -116,7 +119,7 @@ def stringBandwidthTest( lengths ):
     net.stop()
     return client_mean, client_stdev
 
-def main(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size = 40):
+def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size = 40):
     lg.setLogLevel( 'info' )
 
     """in fact, Controller and Remotecontroller have no difference
@@ -138,14 +141,87 @@ def main(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size =
 
     # seems mininet cannot handle more than 640 switches
     print "********* Running with %d switches, TDF = %d *********" % (size, tdf)
-    client_mean, client_stdev = stringBandwidthTest(size)
-
+    client_avg, client_stdev = stringBandwidthTest(size)
     cleanup()
+    return client_avg, client_stdev
 
-if __name__ == '__main__':
+
+
+def drawData(output):
+    base_category = (1, 2, 3)
+    dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
+    xLabel = 'Link Bandwidth (Gbps)'
+    yLabel = 'Average TCP Throughput (Gbps)'
+
+    color_list = ['c', 'r', 'm', 'y', 'g', 'b', 'k', 'w']
+    hatch_list = ['/', '\\', '+', 'x', 'o', '.', '*', '-']
+    width = 0.2
+    fontSize = 21
+    maxY = 10
+
+    rects = []
+    fig, ax = pyplot.subplots()
+    for index in [0, 1, 2]:
+        category = [x + index * width for x in base_category]
+        rect = ax.bar(category, AvgRate[index], width, color=color_list[index], yerr=StdRate[index], hatch=hatch_list[index])
+        rects.append(rect)
+
+    ax.legend(tuple(rects), dataLables, shadow=True, fancybox=True, fontsize=fontSize, loc='upper left')
+    ax.set_xticks([x + width*3/2 for x in base_category ])
+    ax.set_xticklabels(('4', '8', '10'))
+    ax.set_yticks(range(maxY+1))
+
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(fontSize)
+    for tick in ax.yaxis.get_major_ticks():
+        tick.label.set_fontsize(fontSize)
+
+    pyplot.grid()
+    pyplot.ylim(( 0, 10 ))
+    pyplot.xlim(0.65, len(base_category) + 1)
+    pyplot.xlabel(xLabel, fontsize=fontSize)
+    pyplot.ylabel(yLabel, fontsize=fontSize)
+    # pyplot.yticks([x for x in range(0, 1, 11)])
+    # pyplot.xticks([x for x in range(1, 4, 1)])
+    # pyplot.show()
+    pyplot.savefig(output, format='eps')
+    print "finished plotting"
+
+
+def main():
+    AvgRates = []
+    StdRates = []
     TDFs = [1, 4]
     BWs = [4000, 8000, 10000]
     for tdf in TDFs:
+        avg_rates = []
+        std_rates = []
         for bw in BWs:
             file_name = "PerfStringBW%dMTDF%d" %(bw, tdf)
-            main(file_name, "NO", tdf, 0.5, bw)
+            avg, std = runTest(file_name, "NO", tdf, 0.5, bw)
+            avg_rates.append(avg)
+            std_rates.append(std)
+        AvgRates.append(avg_rates)
+        StdRates.append(std_rates)
+
+    # trust me, I got them from physical testbed
+    testbed_avg_rates = [3.78, 7.42, 9.22]
+    testbed_std_rates = [0.06, 0.147, 0.239]
+    AvgRates.append(avg_rates)
+    StdRates.append(testbed_std_rates)
+
+    drawData('Perf40SwDiffBw')
+
+if __name__ == '__main__':
+    main()
+
+
+
+
+
+
+
+
+
+

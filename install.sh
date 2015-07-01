@@ -3,7 +3,7 @@
 # install dependencies
 install_dep() {
     sudo apt-get update
-    sudo apt-get install autoconf automake libtool make gcc git socat psmisc xterm ssh iperf iproute telnet python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 git-core autotools-dev pkg-config libc6-dev python-numpy
+    sudo apt-get install autoconf automake libtool make gcc git socat psmisc xterm ssh iperf iproute telnet python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 git-core autotools-dev pkg-config libc6-dev python-numpy python-matplotlib
 }
 
 # install Open vSwitch
