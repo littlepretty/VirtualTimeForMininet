@@ -19,6 +19,7 @@ import numpy
 import time
 import matplotlib
 import matplotlib.pyplot as pyplot
+matplotlib.use('Agg')
 
 from mininet.net import Mininet
 from mininet.node import *
@@ -67,11 +68,12 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
     # no tdf_adaptor to change TDF
     net.start()
 
+    
     print "*** testing basic connectivity\n"
     src, dst = net.hosts
     if tdf == 1:
-        num_rounds = 3
-        for i in irange(1, num_rounds):
+        num_pings = 3
+        for i in irange(1, num_pings):
             ping_result = list(net.pingFull( [ src, dst ] ))
             # ping_result=[(host1), (host2)]
             # host = (src, dst, data)
@@ -83,11 +85,10 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
         net.ping( [src, dst] )
 
     print "*** testing bandwidth\n"
-
     num_rounds = 3
     client_history = []
-    time = 25
-    omit = 5
+    time = 16
+    omit = 1
     for i in irange(1, num_rounds):
         # bandwidth = net.iperf( [src, dst], l4Type = 'UDP', udpBw='%sM'%set_bw, format = 'm', time=20, clifile=data_file, serfile=data_file )
         bandwidth = net.iperf( [src, dst], l4Type = 'TCP', format = 'm', time=time, omit=omit, clifile=data_file, serfile=data_file )
@@ -111,7 +112,6 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
     print "AVG = %f " % client_mean
     print "STD = %f " % client_stdev
     data_file.write('\n\n')
-
     net.stop()
     return client_mean, client_stdev
 
@@ -188,8 +188,8 @@ def main():
     AvgRates = []
     StdRates = []
     TDFs = [1, 4]
-    BWs = [4000, 8000, 10000]
-    size = 36
+    BWs = [1000, 2000, 4000]
+    size = 16
     for tdf in TDFs:
         avg_rates = []
         std_rates = []
