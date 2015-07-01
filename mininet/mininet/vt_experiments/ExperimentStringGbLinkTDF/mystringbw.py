@@ -57,7 +57,7 @@ class StringTestTopo(Topo):
             last = switch
 
 
-def stringBandwidthTest(host_class, controller_class, link_class, length):
+def stringBandwidthTest(host_class, controller_class, link_class, length, tdf):
 
     "Check bandwidth at various lengths along a switch chain."
 
@@ -69,7 +69,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, length):
 
     print "*** testing basic connectivity\n"
     src, dst = net.hosts
-    if TDF == 1:
+    if tdf == 1:
         num_rounds = 3
         for i in irange(1, num_rounds):
             ping_result = list(net.pingFull( [ src, dst ] ))
@@ -115,7 +115,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, length):
     net.stop()
     return client_mean, client_stdev
 
-def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", size=40):
+def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="10us"):
     lg.setLogLevel( 'info' )
 
     """in fact, Controller and Remotecontroller have no difference
@@ -137,7 +137,7 @@ def runTest(file_name, controller, tdf, set_cpu, set_bw, set_delay = "10us", siz
 
     # seems mininet cannot handle more than 640 switches
     print "******* Running with %d switches, TDF = %d *******" % (size, tdf)
-    client_avg, client_stdev = stringBandwidthTest(host, controller, link, size)
+    client_avg, client_stdev = stringBandwidthTest(host, controller, link, size, tdf)
     cleanup()
     return client_avg, client_stdev
 
@@ -194,7 +194,7 @@ def main():
         std_rates = []
         for bw in BWs:
             file_name = "PerfStringBW%dMTDF%d" %(bw, tdf)
-            avg, std = runTest(file_name, "NO", tdf, 0.5, bw)
+            avg, std = runTest(file_name, "NO", tdf, 36, 0.5, bw)
             avg_rates.append(avg)
             std_rates.append(std)
         AvgRates.append(avg_rates)
