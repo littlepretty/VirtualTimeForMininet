@@ -77,7 +77,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
     net.ping( [ src, dst ] )
 
     if tdf == 1:
-        num_pings = 3
+        num_pings = 1
         for i in irange(1, num_pings):
             ping_result = list(net.pingFull( [src, dst] ))
             rttavg = ping_result[0][2][3]
@@ -87,7 +87,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, dat
     print "*** testing bandwidth"
     print "testing", src, "<->", dst
 
-    num_rounds = 1
+    num_rounds = 5
     #cli_results = []
     ser_results = []
     omit = 1
@@ -165,7 +165,7 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="50us")
     cleanup()
     return avg, std
 
-def drawData(output, AvgRates, StdRates, SwSizes):
+def drawData(output, AvgRates, StdRates, SwSizes, BW):
     base_category = tuple(range(1,len(SwSizes) + 1 ))
     dataLables = ['Mininet, TDF=1', 'Mininet, TDF=4', 'Physical Testbed']
     xLabel = '#Switches'
@@ -173,9 +173,9 @@ def drawData(output, AvgRates, StdRates, SwSizes):
 
     color_list = ['c', 'r', 'm', 'y', 'g', 'b', 'k', 'w']
     hatch_list = ['/', '\\', '+', 'x', 'o', '.', '*', '-']
-    width = 0.1
+    width = 0.25
     fontSize = 21
-    maxY = 5
+    maxY = BW
 
     rects = []
     fig, ax = pyplot.subplots()
@@ -211,8 +211,8 @@ def main():
     AvgRates = []
     StdRates = []
     TDFs = [1, 4]
-    Sizes = [5, 10, 20, 40]
-    BW = 2000
+    Sizes = [20, 40, 60, 80]
+    BW = 4000
     for tdf in TDFs:
         avg_rates = []
         std_rates = []
@@ -228,7 +228,7 @@ def main():
     Sizes2Str = [str(x) for x in Sizes]
     print AvgRates
     print StdRates
-    drawData('ScaleBw%dDiffSz' % BW, AvgRates, StdRates, tuple(Sizes2Str))
+    drawData('ScaleBw%dDiffSz' % BW, AvgRates, StdRates, tuple(Sizes2Str), BW)
 
 if __name__ == '__main__':
     main()
