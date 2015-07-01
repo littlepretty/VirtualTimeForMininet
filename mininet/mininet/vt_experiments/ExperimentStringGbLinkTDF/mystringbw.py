@@ -57,11 +57,11 @@ class StringTestTopo(Topo):
             last = switch
 
 
-def stringBandwidthTest(host_class, controller_class, link_class, length, tdf, data_file):
+def stringBandwidthTest(host_class, controller_class, link_class, size, tdf, data_file):
 
     "Check bandwidth at various lengths along a switch chain."
 
-    topo_class = StringTestTopo(length)
+    topo_class = StringTestTopo(size)
 
     net = Mininet(topo=topo_class, host=host_class, switch=OVSKernelSwitch, controller=controller_class, waitConnected=True, link=link_class)
     # no tdf_adaptor to change TDF
@@ -102,7 +102,7 @@ def stringBandwidthTest(host_class, controller_class, link_class, length, tdf, d
             cliDataStr, unit = cliout.split(" ")
             cliData = float(cliDataStr)
             client_history.append(cliData)
-            data_file.write( "%s\t%f\t%f\t%s\t%s\n" % ( length, src.tdf, net.cpu_usage, serData, cliData ) )
+            data_file.write("%s\t%f\t%f\t%s\t%s\n" % (size, src.tdf, net.cpu_usage, serData, cliData))
 
     client_mean = numpy.mean(client_history)
     client_stdev = numpy.std(client_history)
@@ -189,12 +189,13 @@ def main():
     StdRates = []
     TDFs = [1, 4]
     BWs = [4000, 8000, 10000]
+    size = 36
     for tdf in TDFs:
         avg_rates = []
         std_rates = []
         for bw in BWs:
             file_name = "PerfStringBW%dMTDF%d" %(bw, tdf)
-            avg, std = runTest(file_name, "NO", tdf, 36, 0.5, bw)
+            avg, std = runTest(file_name, "NO", tdf, size, 0.5, bw)
             avg_rates.append(avg)
             std_rates.append(std)
         AvgRates.append(avg_rates)
@@ -206,7 +207,7 @@ def main():
     AvgRates.append(avg_rates)
     StdRates.append(testbed_std_rates)
 
-    drawData('Perf40SwDiffBw')
+    drawData('Perf%dSwDiffBw' % size)
 
 if __name__ == '__main__':
     main()
