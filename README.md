@@ -24,7 +24,14 @@ tar -zxvf linux-3.16.3.tar.gz
 	```
 	sudo ./build_all.sh
 	```
-	* Reboot and select the right kernel image in grub menu.
+    * You may need to configure GRUB so that you can select which kernel to boot
+    ```
+    sudo vim /etc/default/grub
+    GRUB_HIDDEN_TIMEOUT=15
+    GRUB_HIDDEN_TIMEOUT_QUIET=false
+    update-grub
+    ```
+    * Reboot and select the right kernel image in grub menu.
 
 
 ### Install Virtual Time Enabled Mininet

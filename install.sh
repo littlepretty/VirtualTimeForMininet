@@ -3,7 +3,7 @@
 # install dependencies
 install_dep() {
     sudo apt-get update
-    sudo apt-get install autoconf automake libtool make gcc git socat psmisc xterm ssh iperf iproute telnet python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 git-core autotools-dev pkg-config libc6-dev
+    sudo apt-get install autoconf automake libtool make gcc git socat psmisc xterm ssh iperf iproute telnet python-setuptools cgroup-bin ethtool help2man pyflakes pylint pep8 git-core autotools-dev pkg-config libc6-dev python-numpy
 }
 
 # install Open vSwitch
@@ -49,6 +49,12 @@ patch_kernel() {
 
 # install VT-Mininet
 install_vt_mininet() {
+    cd $HOME/vt-mininet/mininet
+    sudo make clean
+    sudo make install
+}
+
+install_all() {
     # clone VTMininet's code
     # git clone https://littlepretty@bitbucket.org/littlepretty/virtualtimeyjq.git vt_mininet
     install_dep
@@ -56,16 +62,15 @@ install_vt_mininet() {
     install_ovs
     download_kernel
     patch_kernel
-
-    cd $HOME/vt_mininet/mininet
-    sudo make clean
-    sudo make install
+    install_vt_mininet
 }
 
-while getopts "akpfsd" option
+
+while getopts "avkpfsd" option
 do
     case $option in
-    a) install_vt_mininet;;
+    a) install_all;;
+    v) install_vt_mininet;;
     k) download_kernel;;
     p) patch_kernel;;
     f) install_of;;
