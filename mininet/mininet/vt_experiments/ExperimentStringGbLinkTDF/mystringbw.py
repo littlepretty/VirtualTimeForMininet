@@ -57,7 +57,7 @@ class StringTestTopo(Topo):
             last = switch
 
 
-def stringBandwidthTest(host_class, controller_class, link_class, length, tdf):
+def stringBandwidthTest(host_class, controller_class, link_class, length, tdf, data_file):
 
     "Check bandwidth at various lengths along a switch chain."
 
@@ -89,8 +89,8 @@ def stringBandwidthTest(host_class, controller_class, link_class, length, tdf):
     time = 25
     omit = 5
     for i in irange(1, num_rounds):
-        # bandwidth = net.iperf( [src, dst], l4Type = 'UDP', udpBw='%sM'%set_bw, format = 'm', time=20, clifile=dataFile, serfile=dataFile )
-        bandwidth = net.iperf( [src, dst], l4Type = 'TCP', format = 'm', time=time, omit=omit, clifile=dataFile, serfile=dataFile )
+        # bandwidth = net.iperf( [src, dst], l4Type = 'UDP', udpBw='%sM'%set_bw, format = 'm', time=20, clifile=data_file, serfile=data_file )
+        bandwidth = net.iperf( [src, dst], l4Type = 'TCP', format = 'm', time=time, omit=omit, clifile=data_file, serfile=data_file )
         flush()
         serout = bandwidth[0]
         cliout = bandwidth[1]
@@ -137,7 +137,7 @@ def runTest(file_name, controller, tdf, size, set_cpu, set_bw, set_delay="10us")
 
     # seems mininet cannot handle more than 640 switches
     print "******* Running with %d switches, TDF = %d *******" % (size, tdf)
-    client_avg, client_stdev = stringBandwidthTest(host, controller, link, size, tdf)
+    client_avg, client_stdev = stringBandwidthTest(host, controller, link, size, tdf, data_file)
     cleanup()
     return client_avg, client_stdev
 
